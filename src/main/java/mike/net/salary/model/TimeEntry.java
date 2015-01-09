@@ -1,11 +1,8 @@
 package mike.net.salary.model;
 
-
 import java.time.LocalDateTime;
 
-
 public class TimeEntry {
-
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
@@ -25,7 +22,4 @@ public class TimeEntry {
         this.endTime = endTime;
     }
 
-    public boolean overnight() {
-        return startTime.getDayOfYear() != endTime.getDayOfYear();
-    }
 }

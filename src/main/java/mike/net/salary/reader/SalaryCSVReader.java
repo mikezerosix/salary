@@ -24,11 +24,11 @@ public class SalaryCSVReader {
     public static final String DATE = "Date";
     public static final String START = "Start";
     public static final String END = "End";
-    public static final CSVFormat SALARY_CSV_FORMAT = CSVFormat.RFC4180.withHeader(PERSON_NAME, PERSON_ID, DATE, START, END).withSkipHeaderRecord(true);
-    public static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy");
-    public static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("H:mm");
+    private static final CSVFormat SALARY_CSV_FORMAT = CSVFormat.RFC4180.withHeader(PERSON_NAME, PERSON_ID, DATE, START, END).withSkipHeaderRecord(true);
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy");
+    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("H:mm");
 
-    public static Map<Long, Person> read(File file) throws IOException {
+    public static Map<Long, Person> readSalaryCSVFile(File file) throws IOException {
         Map<Long, Person> personMap = new HashMap<>();
         final List<CSVRecord> records = getParseCSVRecords(file);
         records.forEach(record -> {
@@ -53,7 +53,7 @@ public class SalaryCSVReader {
 
     private static TimeEntry parseTimeEntry(CSVRecord record) {
         final TimeEntry timeEntry = new TimeEntry();
-        LocalDate day = LocalDate.parse(record.get(DATE));
+        LocalDate day = LocalDate.parse(record.get(DATE), DATE_FORMAT);
         timeEntry.setStartTime(LocalDateTime.of(day, LocalTime.parse(record.get(START), TIME_FORMAT)));
         timeEntry.setStartTime(LocalDateTime.of(day, LocalTime.parse(record.get(END), TIME_FORMAT)));
         return timeEntry;
