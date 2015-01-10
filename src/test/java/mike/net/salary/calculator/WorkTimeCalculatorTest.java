@@ -1,5 +1,6 @@
 package mike.net.salary.calculator;
 
+import mike.net.salary.model.Person;
 import mike.net.salary.model.TimeEntry;
 import mike.net.salary.model.WorkTime;
 import org.junit.Test;
@@ -22,6 +23,15 @@ public class WorkTimeCalculatorTest {
         timeEntry.setStartTime(LocalDateTime.of(day, LocalTime.of(6, 00)));
         timeEntry.setEndTime(LocalDateTime.of(day, LocalTime.of(14, 00)));
         assertThat(workTimeCalculator.timeEntryBaseMinutes(timeEntry), equalTo(480L));
+    }
+
+    @Test
+    public void testBaseOvernight() throws Exception {
+        final TimeEntry timeEntry = new TimeEntry();
+        timeEntry.setStartTime(LocalDateTime.of(day, LocalTime.of(16, 00)));
+        timeEntry.setEndTime(LocalDateTime.of(day.plusDays(1), LocalTime.of(02, 00)));
+        assertThat(workTimeCalculator.timeEntryBaseMinutes(timeEntry), equalTo(600L));
+
     }
 
     @Test
@@ -136,5 +146,39 @@ public class WorkTimeCalculatorTest {
         assertThat(workTime.getOvertimeQuarter(), is(120L));
         assertThat(workTime.getOvertimeHalf(), is(120L));
         assertThat(workTime.getOvertimeFull(), is(5L * 60));
+    }
+
+    @Test
+    public void testCalculateWorkTimeForSingleEntry() throws Exception {
+        Person person = new Person("", 1);
+        final TimeEntry timeEntry = new TimeEntry();
+        timeEntry.setStartTime(LocalDateTime.of(day, LocalTime.of(5, 00)));
+        timeEntry.setEndTime(LocalDateTime.of(day, LocalTime.of(18, 00)));
+        person.addWorkLog(day, timeEntry);
+        final WorkTime workTime = workTimeCalculator.calculateWorkTime(person);
+        assertThat(workTime.getBase(), equalTo(13L*60));
+        assertThat(workTime.getIrregular(), equalTo( 60L));
+        assertThat(workTime.getOvertimeQuarter(), equalTo( 120L));
+        assertThat(workTime.getOvertimeHalf(), equalTo( 120L));
+        assertThat(workTime.getOvertimeFull(), equalTo( 60L));
+    }
+
+    @Test
+    public void testCalculateWorkTimeForTwoEntry() throws Exception {
+        Person person = new Person("", 1);
+        final TimeEntry timeEntry = new TimeEntry();
+        timeEntry.setStartTime(LocalDateTime.of(day, LocalTime.of(5, 00)));
+        timeEntry.setEndTime(LocalDateTime.of(day, LocalTime.of(13, 00)));
+        person.addWorkLog(day, timeEntry);
+        final TimeEntry timeEntry2 = new TimeEntry();
+        timeEntry2.setStartTime(LocalDateTime.of(day, LocalTime.of(13, 00)));
+        timeEntry2.setEndTime(LocalDateTime.of(day, LocalTime.of(18, 00)));
+        person.addWorkLog(day, timeEntry2);
+        final WorkTime workTime = workTimeCalculator.calculateWorkTime(person);
+        assertThat(workTime.getBase(), equalTo(13L*60));
+        assertThat(workTime.getIrregular(), equalTo( 60L));
+        assertThat(workTime.getOvertimeQuarter(), equalTo( 120L));
+        assertThat(workTime.getOvertimeHalf(), equalTo( 120L));
+        assertThat(workTime.getOvertimeFull(), equalTo( 60L));
     }
 }

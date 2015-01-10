@@ -9,10 +9,12 @@ import org.apache.commons.csv.CSVRecord;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,14 +30,14 @@ public class SalaryCSVReader {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy");
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("H:mm");
 
-    public static Map<Long, Person> readSalaryCSVFile(File file) throws IOException {
+    public static List<Person> readSalaryCSVFile(File file) throws IOException {
         Map<Long, Person> personMap = new HashMap<>();
         final List<CSVRecord> records = getParseCSVRecords(file);
         records.forEach(record -> {
             final Person person = getPerson(personMap, record);
             person.addWorkLog(LocalDate.parse(record.get(DATE), DATE_FORMAT), parseTimeEntry(record));
         });
-        return personMap;
+        return new ArrayList<>(personMap.values());
     }
 
     private static Person getPerson(Map<Long, Person> personMap, CSVRecord record) {
@@ -54,9 +56,18 @@ public class SalaryCSVReader {
     private static TimeEntry parseTimeEntry(CSVRecord record) {
         final TimeEntry timeEntry = new TimeEntry();
         LocalDate day = LocalDate.parse(record.get(DATE), DATE_FORMAT);
-        timeEntry.setStartTime(LocalDateTime.of(day, LocalTime.parse(record.get(START), TIME_FORMAT)));
-        timeEntry.setStartTime(LocalDateTime.of(day, LocalTime.parse(record.get(END), TIME_FORMAT)));
+        final LocalTime start = LocalTime.parse(record.get(START), TIME_FORMAT);
+        timeEntry.setStartTime(LocalDateTime.of(day, start));
+        final LocalTime end = LocalTime.parse(record.get(END), TIME_FORMAT);
+        timeEntry.setEndTime(LocalDateTime.of( getEndDay(day, start, end), end));
         return timeEntry;
+    }
+
+    private static LocalDate getEndDay(LocalDate day, LocalTime start, LocalTime end) {
+        if (Duration.between(start, end).isNegative()) {
+           return day.plusDays(1);
+        }
+        return day;
     }
 
 }

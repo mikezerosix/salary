@@ -14,4 +14,24 @@ public class SalaryRate {
         this.overtimeHalfRate = overtimeHalfRate;
         this.getOvertimeFullRate = getOvertimeFullRate;
     }
+
+    public double getBaseRate() {
+        return baseRate;
+    }
+
+    public double getIrregularRate() {
+        return irregularRate;
+    }
+
+    public double getOvertimeQuarterRate() {
+        return overtimeQuarterRate;
+    }
+
+    public double getOvertimeHalfRate() {
+        return overtimeHalfRate;
+    }
+
+    public double getGetOvertimeFullRate() {
+        return getOvertimeFullRate;
+    }
 }
