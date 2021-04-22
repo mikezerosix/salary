@@ -1,6 +1,8 @@
 {
   "summary": {
-    "title": "asdasd"
+    "title": "asdasd",
+    "owner": "asdasd",
+    "description": "dasdasd"
   },
   "detail": {
     "contributors": [],
@@ -9,7 +11,13 @@
         "title": "asdasdasdasd",
         "thumbnail": "./public/content/images/thumbnail.jpg",
         "id": 0
+      },
+      {
+        "title": "asdasd",
+        "thumbnail": "./public/content/images/thumbnail.jpg",
+        "id": 1
       }
-    ]
+    ],
+    "reviewer": "asdas"
   }
 }
